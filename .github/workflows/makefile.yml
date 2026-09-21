@@ -15,14 +15,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Android NDK (r29)
+      - name: Setup Android NDK
         run: |
           NDK_URL="https://dl.google.com/android/repository/android-ndk-r29-linux.zip"
-          
-          echo "Downloading Android NDK ${NDK_VERSION}..."
           curl -SL --progress-bar "$NDK_URL" -o ndk.zip
-          
-          echo "Extracting NDK..."
           unzip -q ndk.zip -d $HOME/ndk
           rm ndk.zip
           
@@ -30,7 +26,7 @@ jobs:
           echo "NDK_HOME=$NDK_HOME" >> $GITHUB_ENV
           echo "NDK_ROOT=$NDK_HOME" >> $GITHUB_ENV
 
-      - name: Build payload.so via Make
+      - name: Build payload.so
         run: |
           sed -i 's/\r$//' exploit/Makefile
           cd exploit
@@ -38,11 +34,9 @@ jobs:
                TOOLCHAIN="$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64" \
                CC="$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android30-clang" \
                SYSROOT="$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot" \
-               check-ndk all
-          cp preload.so ../0.so
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: payload-so-output
-          path: 0.so
+          path: exploit/preload.so
