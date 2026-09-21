@@ -32,6 +32,8 @@ jobs:
 
       - name: Build payload.so via Make
         run: |
+          sed -i 's/\r$//' exploit/Makefile
+          ls -la
           make NDK="$NDK_HOME" \
                TOOLCHAIN="$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64" \
                check-ndk all
