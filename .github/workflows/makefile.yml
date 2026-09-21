@@ -34,10 +34,7 @@ jobs:
         run: |
           sed -i 's/\r$//' exploit/Makefile
           cd exploit
-          make -C \
-               NDK="$NDK_HOME" \
-               TOOLCHAIN="$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64" \
-               check-ndk all
+          make NDK="$NDK_HOME" TOOLCHAIN="$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64" CC="$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android30-clang" SYSROOT="$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot" check-ndk all
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
