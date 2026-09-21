@@ -38,6 +38,7 @@ jobs:
                TOOLCHAIN="$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64" \
                CC="$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android30-clang" \
                SYSROOT="$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot" \
+               check-ndk all
           cp preload.so ../0.so
 
       - name: Upload artifact
