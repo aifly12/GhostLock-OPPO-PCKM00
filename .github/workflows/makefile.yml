@@ -1,0 +1,44 @@
+name: Build Payload
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Android NDK (r29)
+        run: |
+          NDK_VERSION="r29"
+          NDK_URL="https://dl.google.com/android/repository/android-ndk-${NDK_VERSION}-linux-x86_64.zip"
+          
+          echo "Downloading Android NDK ${NDK_VERSION}..."
+          curl -SL --progress-bar "$NDK_URL" -o ndk.zip
+          
+          echo "Extracting NDK..."
+          unzip -q ndk.zip -d $HOME/ndk
+          rm ndk.zip
+          
+          NDK_HOME=$(find $HOME/ndk -maxdepth 2 -name "source.properties" | xargs dirname)
+          echo "NDK_HOME=$NDK_HOME" >> $GITHUB_ENV
+          echo "NDK_ROOT=$NDK_HOME" >> $GITHUB_ENV
+
+      - name: Build payload.so via Make
+        run: |
+          make NDK="$NDK_HOME" \
+               TOOLCHAIN="$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64" \
+               check-ndk all
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: payload-so-output
+          path: 0.so
